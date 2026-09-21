@@ -32,8 +32,8 @@ git add . && git commit -m "post: 标题" && git push
 
 Cloudflare 收到 push 自动构建上线，约 40 秒。
 
-> **当前分支是 `astro-blog`，不是 `main`。** 这个仓库的 `main` 上还躺着旧的 Next.js 站点。
-> 在 Cloudflare 里把生产分支设成 `astro-blog`；等确定不要旧站了，再把这个分支合进 `main` 并改回去。
+> **当前分支是 `astro-blog`，不是 `main`。** 这个仓库的 `main` 上还是旧的 Next.js 站点，Cloudflare 的生产分支已经指向 `astro-blog`。
+> 等确定不要旧站了，再把这个分支合进 `main`，并把 Dashboard 里的生产分支改回 `main`，**两步要一起做**。
 
 ## 构建与预览
 
@@ -47,10 +47,11 @@ npm run check      # 类型检查
 
 ## 部署
 
-两种方式，配置都在 `wrangler.jsonc`：
+**已接好 Workers Builds：push 到 `astro-blog` 自动构建并上线**，约 1 分钟。其他分支 push 只上传预览版本，不影响线上。构建日志在 Dashboard → Workers → stormaker-dev → Deployments。
 
-- **自动**（推荐）：Cloudflare Dashboard → Workers → Import a repository，build 命令 `npm run build`，输出目录 `dist`，**生产分支填 `astro-blog`**。push 到该分支自动上线，其他分支出预览 URL。
-- **手动**：`npm run build && npx wrangler deploy`
+Cloudflare 侧的配置（Settings → Builds）：生产分支 `astro-blog`，构建命令 `npm run build`，部署命令 `npx wrangler deploy`。自定义域写在 `wrangler.jsonc` 的 `routes` 里，每次部署都会带上。
+
+紧急情况下可以绕过 Git 手动发版：`npm run build && npx wrangler deploy`。
 
 Node 版本由 `.nvmrc` 指定（24）。
 
