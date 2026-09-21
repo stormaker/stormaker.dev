@@ -1,9 +1,8 @@
 // 全站常量。改这里就等于改站点身份，不用去各个页面里翻。
 
-/** TODO: 换成你自己的站点名 */
 export const SITE_TITLE = 'Stormaker';
-/** TODO: 换成你自己的一句话简介，会进 <meta description> / RSS / OG */
-export const SITE_DESCRIPTION = '技术笔记占位描述，待替换。';
+/** 一句话简介，会进首页 Hero、<meta description>、RSS 和 OG */
+export const SITE_DESCRIPTION = '写代码、做产品，也把踩过的坑写下来。内容以 Serverless、前端工程和 AI 工具为主。';
 export const SITE_URL = 'https://stormaker.dev';
 /** RSS / 版权署名 */
 export const AUTHOR = 'Stormaker';
@@ -32,5 +31,5 @@ export const SOCIAL = {
  */
 export const CF_ANALYTICS_TOKEN = '';
 
-/** 首页潮汐卡上的「最近在写」。TODO: 换成你正在写的方向 */
+/** 首页潮汐卡上的「最近在写」 */
 export const NOW_WRITING = 'Serverless 与边缘计算';
