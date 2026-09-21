@@ -1,0 +1,52 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+
+// Pagefind 的索引由 `astro build` 之后的 pagefind CLI 扫 dist/ 生成，
+// 所以 dev 下 /pagefind/* 不存在，搜索只在 build + preview 后可用。
+const isDev = import.meta.env.DEV;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`搜索 · ${SITE_TITLE}`} description="全站全文搜索。" />
+		{!isDev && <link rel="stylesheet" href="/pagefind/pagefind-component-ui.css" />}
+		{!isDev && <script is:inline type="module" src="/pagefind/pagefind-component-ui.js" />}
+		<style>
+			main {
+				width: 720px;
+				max-width: calc(100% - 2em);
+			}
+			.hint {
+				padding: 1em;
+				border-radius: 8px;
+				background: rgb(var(--gray-light));
+				color: rgb(var(--gray-dark));
+				font-size: 0.9em;
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main data-pagefind-ignore>
+			<h1>搜索</h1>
+			{
+				isDev ? (
+					<p class="hint">
+						开发模式下没有搜索索引。跑 <code>npm run build &amp;&amp; npm run preview</code>{' '}
+						再访问这个页面即可看到真实效果。
+					</p>
+				) : (
+					<Fragment>
+						<pagefind-config lang="zh-cn" />
+						<pagefind-searchbox placeholder="搜索文章" autofocus="true" show-sub-results="true" />
+					</Fragment>
+				)
+			}
+		</main>
+		<Footer />
+	</body>
+</html>

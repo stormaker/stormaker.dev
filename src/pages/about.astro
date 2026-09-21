@@ -1,0 +1,41 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE, SOCIAL } from '../consts';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`关于 · ${SITE_TITLE}`} description="关于我和这个站点。" />
+		<style>
+			main {
+				width: 720px;
+				max-width: calc(100% - 2em);
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>关于</h1>
+			<!-- TODO: 写你自己的介绍 -->
+			<p>这里是占位文字，写点你是谁、在做什么、这个博客打算写什么。</p>
+
+			<h2>联系</h2>
+			<ul>
+				{SOCIAL.github && <li><a href={SOCIAL.github}>GitHub</a></li>}
+				{SOCIAL.email && <li><a href={`mailto:${SOCIAL.email}`}>{SOCIAL.email}</a></li>}
+				<li><a href="/rss.xml">RSS 订阅</a></li>
+			</ul>
+
+			<h2>这个站</h2>
+			<p>
+				Astro 构建，静态输出，托管在 Cloudflare Workers 上。源码私有，内容以 Markdown 形式写在仓库里，
+				push 到 main 自动部署。
+			</p>
+		</main>
+		<Footer />
+	</body>
+</html>

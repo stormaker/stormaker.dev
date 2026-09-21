@@ -1,0 +1,83 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import Header from '../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getPublishedPosts } from '../lib/posts';
+
+const recent = (await getPublishedPosts()).slice(0, 5);
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<style>
+			main {
+				width: 720px;
+				max-width: calc(100% - 2em);
+			}
+			.intro {
+				margin-bottom: 3em;
+			}
+			.intro h1 {
+				margin-bottom: 0.3em;
+			}
+			.intro p {
+				color: rgb(var(--gray-dark));
+			}
+			ul {
+				padding: 0;
+				list-style: none;
+			}
+			li {
+				margin-bottom: 1.4em;
+			}
+			li a {
+				font-size: 1.15em;
+				text-decoration: none;
+			}
+			.date {
+				margin: 0.2em 0 0;
+				color: rgb(var(--gray));
+				font-size: 0.9em;
+			}
+			.desc {
+				margin: 0.3em 0 0;
+				color: rgb(var(--gray-dark));
+				font-size: 0.95em;
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section class="intro">
+				<!-- TODO: 换成你自己的自我介绍 -->
+				<h1>{SITE_TITLE}</h1>
+				<p>{SITE_DESCRIPTION}</p>
+			</section>
+
+			<section>
+				<h2>最近的文章</h2>
+				{recent.length === 0 && <p>还没有文章。</p>}
+				<ul>
+					{
+						recent.map((post) => (
+							<li>
+								<a href={`/blog/${post.id}/`}>{post.data.title}</a>
+								<p class="date">
+									<FormattedDate date={post.data.pubDate} />
+								</p>
+								<p class="desc">{post.data.description}</p>
+							</li>
+						))
+					}
+				</ul>
+				<p><a href="/blog/">全部文章 →</a></p>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>

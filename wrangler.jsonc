@@ -1,0 +1,24 @@
+/**
+ * Cloudflare Workers（静态资源模式）部署配置。
+ * 纯静态站不需要写任何 Worker 代码，Cloudflare 直接从 dist/ 提供文件。
+ *
+ * 本地部署：npm run build && npx wrangler deploy
+ * 自动部署：Dashboard → Workers → Import a repository，build 命令 npm run build
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "stormaker-dev",
+	"compatibility_date": "2026-09-21",
+	"assets": {
+		"directory": "./dist",
+		// 找不到路径时返回构建出来的 404.html，而不是 Cloudflare 的默认页
+		"not_found_handling": "404-page"
+	},
+	"observability": {
+		"enabled": true
+	}
+	// 以后要写 Serverless API（浏览量、订阅表单等），在这里加：
+	//   "main": "./src/worker.ts",
+	//   "kv_namespaces": [{ "binding": "KV", "id": "..." }],
+	//   "d1_databases": [{ "binding": "DB", "database_name": "blog", "database_id": "..." }]
+}
