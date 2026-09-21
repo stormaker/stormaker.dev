@@ -32,6 +32,9 @@ git add . && git commit -m "post: 标题" && git push
 
 Cloudflare 收到 push 自动构建上线，约 40 秒。
 
+> **当前分支是 `astro-blog`，不是 `main`。** 这个仓库的 `main` 上还躺着旧的 Next.js 站点。
+> 在 Cloudflare 里把生产分支设成 `astro-blog`；等确定不要旧站了，再把这个分支合进 `main` 并改回去。
+
 ## 构建与预览
 
 ```bash
@@ -46,7 +49,7 @@ npm run check      # 类型检查
 
 两种方式，配置都在 `wrangler.jsonc`：
 
-- **自动**（推荐）：Cloudflare Dashboard → Workers → Import a repository，build 命令 `npm run build`，输出目录 `dist`。push 到 `main` 自动上线，其他分支出预览 URL。
+- **自动**（推荐）：Cloudflare Dashboard → Workers → Import a repository，build 命令 `npm run build`，输出目录 `dist`，**生产分支填 `astro-blog`**。push 到该分支自动上线，其他分支出预览 URL。
 - **手动**：`npm run build && npx wrangler deploy`
 
 Node 版本由 `.nvmrc` 指定（24）。
