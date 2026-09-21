@@ -1,0 +1,35 @@
+---
+/**
+ * 全站唯一的页面骨架。所有页面都从这里进，
+ * 导航、页脚、背景、字体只在这一处定义 —— 风格统一靠结构保证，不靠自觉。
+ */
+import type { ImageMetadata } from 'astro';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+
+interface Props {
+	title: string;
+	description: string;
+	image?: ImageMetadata;
+	type?: 'website' | 'article';
+}
+
+const { title, description, image, type } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={title} description={description} image={image} type={type} />
+		<slot name="head" />
+	</head>
+	<body>
+		<slot name="top" />
+		<Header />
+		<main>
+			<slot />
+		</main>
+		<Footer />
+	</body>
+</html>

@@ -1,83 +1,123 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
-import { getPublishedPosts } from '../lib/posts';
+import PostList from '../components/PostList.astro';
+import { NOW_WRITING, SITE_DESCRIPTION, SITE_TITLE, SOCIAL } from '../consts';
+import Base from '../layouts/Base.astro';
+import { getAllTags, getPublishedPosts } from '../lib/posts';
+import { contourRings, wavePath } from '../lib/sea';
 
-const recent = (await getPublishedPosts()).slice(0, 5);
+const posts = await getPublishedPosts();
+const tags = await getAllTags();
+const recent = posts.slice(0, 5);
+const latest = posts[0];
+
+// 潮汐卡上的数字全部来自真实数据
+const DAY = 86_400_000;
+const first = posts.at(-1)?.data.pubDate;
+const daysAfloat = first ? Math.max(1, Math.round((Date.now() - first.valueOf()) / DAY)) : 0;
+const lastUpdate = latest?.data.pubDate.toISOString().slice(0, 10);
+
+const arrow =
+	'<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 11 11 3M5 3h6v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 ---
 
-<!doctype html>
-<html lang="zh-CN">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<style>
-			main {
-				width: 720px;
-				max-width: calc(100% - 2em);
-			}
-			.intro {
-				margin-bottom: 3em;
-			}
-			.intro h1 {
-				margin-bottom: 0.3em;
-			}
-			.intro p {
-				color: rgb(var(--gray-dark));
-			}
-			ul {
-				padding: 0;
-				list-style: none;
-			}
-			li {
-				margin-bottom: 1.4em;
-			}
-			li a {
-				font-size: 1.15em;
-				text-decoration: none;
-			}
-			.date {
-				margin: 0.2em 0 0;
-				color: rgb(var(--gray));
-				font-size: 0.9em;
-			}
-			.desc {
-				margin: 0.3em 0 0;
-				color: rgb(var(--gray-dark));
-				font-size: 0.95em;
-			}
-		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
-			<section class="intro">
-				<!-- TODO: 换成你自己的自我介绍 -->
-				<h1>{SITE_TITLE}</h1>
-				<p>{SITE_DESCRIPTION}</p>
-			</section>
+<Base title={SITE_TITLE} description={SITE_DESCRIPTION}>
+	<div class="hero-sea">
+		<section class="hero shell">
+			<svg class="contours" viewBox="0 0 1000 620" aria-hidden="true">
+				{contourRings.map((r) => <path d={r.d} fill="none" stroke="currentColor" stroke-width={r.width} />)}
+			</svg>
 
-			<section>
-				<h2>最近的文章</h2>
-				{recent.length === 0 && <p>还没有文章。</p>}
-				<ul>
+			<div>
+				<div class="eyebrow bare rise"><b>N° 01</b> · {SITE_TITLE} · 技术笔记</div>
+				<!-- TODO: 换成你自己的主张。<mark class="wave"> 包住的词会有冰川蓝波浪荧光笔 -->
+				<h1 class="rise d1">迎着风暴，<br /><mark class="wave">造点东西</mark><span class="serif">.</span></h1>
+				<p class="lede rise d2">{SITE_DESCRIPTION}</p>
+				<div class="hero-actions rise d3">
 					{
-						recent.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>{post.data.title}</a>
-								<p class="date">
-									<FormattedDate date={post.data.pubDate} />
-								</p>
-								<p class="desc">{post.data.description}</p>
-							</li>
-						))
+						latest && (
+							<a class="btn primary" href={`/blog/${latest.id}/`}>
+								读最新一篇 <span class="arrow" set:html={arrow} />
+							</a>
+						)
 					}
-				</ul>
-				<p><a href="/blog/">全部文章 →</a></p>
+					<a class="btn" href="/blog/">全部文章 <span class="arrow" set:html={arrow} /></a>
+				</div>
+			</div>
+
+			<aside class="tide-card rise d2" aria-label="站点潮汐记录">
+				<div class="top"><span>Tide log · 潮汐记录</span><span class="status"><i></i>Writing</span></div>
+				<h2>最近在写：<br />{NOW_WRITING}</h2>
+				{lastUpdate && <p class="sub">最近一次更新 · {lastUpdate}</p>}
+				<div class="waves" aria-hidden="true">
+					<svg class="w3" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d={wavePath(46, 16, 300)} /></svg>
+					<svg class="w2" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d={wavePath(62, 12, 240)} /></svg>
+					<svg class="w1" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d={wavePath(78, 9, 200)} /></svg>
+				</div>
+				<div class="stats">
+					<div class="stat"><b>{posts.length}</b><span>Posts</span></div>
+					<div class="stat"><b>{tags.length}</b><span>Topics</span></div>
+					<div class="stat"><b>{daysAfloat}</b><span>Days afloat</span></div>
+				</div>
+			</aside>
+		</section>
+	</div>
+
+	<section class="block shell">
+		<div class="eyebrow"><b>01</b> Latest · 最近写的</div>
+		<div class="block-head">
+			<h2 class="section-title">最近写的，<span>按时间倒序。</span></h2>
+			<p>每篇都来自一个真实遇到的问题。写下来，是为了下次不用再想一遍。</p>
+		</div>
+		{recent.length > 0 ? <PostList posts={recent} /> : <p class="empty">还没有文章。</p>}
+		{posts.length > recent.length && <a class="more" href="/blog/">查看全部 {posts.length} 篇文章 <span>→</span></a>}
+	</section>
+
+	{
+		tags.length > 0 && (
+			<section class="block shell">
+				<div class="eyebrow"><b>02</b> Routes · 航线</div>
+				<div class="block-head">
+					<h2 class="section-title">按主题，<span>找到要读的。</span></h2>
+					<p>标签即航线。点进去是这个方向上的全部文章。</p>
+				</div>
+				<div class="topics">
+					{tags.map(({ tag, count }) => (
+						<a class="chip" href={`/tags/${encodeURIComponent(tag)}/`}>
+							#{tag} <span class="count">{count}</span>
+						</a>
+					))}
+				</div>
 			</section>
-		</main>
-		<Footer />
-	</body>
-</html>
+		)
+	}
+
+	<section class="shell">
+		<div class="harbor">
+			<div class="ring" aria-hidden="true"></div>
+			<div>
+				<div class="eyebrow"><b>{tags.length > 0 ? '03' : '02'}</b> Harbor · 靠岸</div>
+				<h2>读到这里，<br /><em>欢迎来打个招呼。</em></h2>
+				<p>订阅 RSS 不会错过新文章；有问题或想交流，GitHub 上找我。</p>
+			</div>
+			<div class="harbor-links">
+				<a href="/rss.xml"><span>RSS 订阅<small>/rss.xml</small></span><Fragment set:html={arrow} /></a>
+				{
+					SOCIAL.github && (
+						<a href={SOCIAL.github} target="_blank" rel="me noopener">
+							<span>GitHub<small>{SOCIAL.github.replace('https://', '')}</small></span>
+							<Fragment set:html={arrow} />
+						</a>
+					)
+				}
+				{
+					SOCIAL.email && (
+						<a href={`mailto:${SOCIAL.email}`}>
+							<span>Email<small>{SOCIAL.email}</small></span>
+							<Fragment set:html={arrow} />
+						</a>
+					)
+				}
+			</div>
+		</div>
+	</section>
+</Base>

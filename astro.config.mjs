@@ -10,32 +10,31 @@ export default defineConfig({
 	integrations: [mdx(), sitemap()],
 	markdown: {
 		shikiConfig: {
-			themes: { light: 'github-light', dark: 'github-dark' },
+			// 代码块永远是深海底色，不随明暗主题切换，所以只用一个暗色主题
+			theme: 'github-dark-dimmed',
 			wrap: true,
 		},
 	},
+	// 构建时从 Google Fonts 下载并随站点自托管，运行时不请求第三方。
+	// 只取拉丁子集：中文走系统苹方 / 思源，CJK 网络字体动辄数 MB，不值得。
 	fonts: [
 		{
-			provider: fontProviders.local(),
-			name: 'Atkinson',
-			cssVariable: '--font-atkinson',
-			fallbacks: ['sans-serif'],
-			options: {
-				variants: [
-					{
-						src: ['./src/assets/fonts/atkinson-regular.woff'],
-						weight: 400,
-						style: 'normal',
-						display: 'swap',
-					},
-					{
-						src: ['./src/assets/fonts/atkinson-bold.woff'],
-						weight: 700,
-						style: 'normal',
-						display: 'swap',
-					},
-				],
-			},
+			provider: fontProviders.google(),
+			name: 'Instrument Serif',
+			cssVariable: '--font-serif',
+			weights: [400],
+			styles: ['normal', 'italic'],
+			subsets: ['latin'],
+			fallbacks: ['Georgia', 'serif'],
+		},
+		{
+			provider: fontProviders.google(),
+			name: 'JetBrains Mono',
+			cssVariable: '--font-mono',
+			weights: [400, 600],
+			styles: ['normal'],
+			subsets: ['latin'],
+			fallbacks: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
 		},
 	],
 });

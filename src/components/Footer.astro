@@ -1,37 +1,23 @@
 ---
 import { AUTHOR, SOCIAL } from '../consts';
 
-const today = new Date();
+const year = new Date().getFullYear();
 ---
 
-<footer data-pagefind-ignore>
-	&copy; {today.getFullYear()} {AUTHOR}
-	<div class="social-links">
-		{SOCIAL.github && <a href={SOCIAL.github} target="_blank" rel="me noopener">GitHub</a>}
-		{SOCIAL.x && <a href={SOCIAL.x} target="_blank" rel="me noopener">X</a>}
-		{SOCIAL.mastodon && <a href={SOCIAL.mastodon} target="_blank" rel="me noopener">Mastodon</a>}
-		{SOCIAL.email && <a href={`mailto:${SOCIAL.email}`}>Email</a>}
-		<a href="/rss.xml">RSS</a>
+<footer class="site-footer" data-pagefind-ignore>
+	<svg class="swell" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true">
+		<path class="s1" d="M0 26 C 240 0 480 56 720 26 S 1200 0 1440 26 V60 H0Z"></path>
+		<path class="s2" d="M0 40 C 260 16 520 64 780 38 S 1240 18 1440 42 V60 H0Z"></path>
+	</svg>
+	<div class="shell foot-row">
+		<span>&copy; {year} {AUTHOR}</span>
+		<nav aria-label="页脚链接">
+			{SOCIAL.github && <a href={SOCIAL.github} target="_blank" rel="me noopener">GitHub</a>}
+			{SOCIAL.x && <a href={SOCIAL.x} target="_blank" rel="me noopener">X</a>}
+			{SOCIAL.mastodon && <a href={SOCIAL.mastodon} target="_blank" rel="me noopener">Mastodon</a>}
+			{SOCIAL.email && <a href={`mailto:${SOCIAL.email}`}>Email</a>}
+			<a href="/rss.xml">RSS</a>
+		</nav>
+		<span class="serif">Calm seas never made a skilled sailor.</span>
 	</div>
 </footer>
-<style>
-	footer {
-		padding: 2em 1em 6em 1em;
-		background: linear-gradient(var(--gray-gradient)) no-repeat;
-		color: rgb(var(--gray));
-		text-align: center;
-	}
-	.social-links {
-		display: flex;
-		justify-content: center;
-		gap: 1em;
-		margin-top: 1em;
-	}
-	.social-links a {
-		text-decoration: none;
-		color: rgb(var(--gray));
-	}
-	.social-links a:hover {
-		color: rgb(var(--gray-dark));
-	}
-</style>

@@ -4,16 +4,9 @@ interface Props {
 }
 
 const { date } = Astro.props;
+// 航海日志式的 YYYY-MM-DD。frontmatter 里的纯日期被解析成 UTC 零点，
+// 所以按 UTC 取年月日，不会因构建机时区差一天。
+const iso = date.toISOString().slice(0, 10);
 ---
 
-<time datetime={date.toISOString()}>
-	{
-		date.toLocaleDateString('zh-CN', {
-			// frontmatter 里的纯日期被解析成 UTC 零点，按 UTC 格式化才不会因构建机时区差一天
-			timeZone: 'UTC',
-			year: 'numeric',
-			month: 'long',
-			day: 'numeric',
-		})
-	}
-</time>
+<time datetime={date.toISOString()}>{iso}</time>

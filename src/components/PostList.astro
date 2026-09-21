@@ -1,0 +1,41 @@
+---
+import type { Post } from '../lib/posts';
+import FormattedDate from './FormattedDate.astro';
+
+interface Props {
+	posts: Post[];
+}
+
+const { posts } = Astro.props;
+---
+
+<ul class="post-list">
+	{
+		posts.map((post) => (
+			<li class="post-row">
+				<a class="row" href={`/blog/${post.id}/`}>
+					<FormattedDate date={post.data.pubDate} />
+					<div>
+						<h3>
+							{post.data.title}
+							{post.data.draft && <span class="draft-flag">草稿</span>}
+						</h3>
+						<p>{post.data.description}</p>
+						{post.data.tags.length > 0 && (
+							<div class="chips">
+								{post.data.tags.map((tag) => (
+									<span class="chip">#{tag}</span>
+								))}
+							</div>
+						)}
+					</div>
+					<span class="go" aria-hidden="true">
+						<svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+							<path d="M3 11 11 3M5 3h6v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+						</svg>
+					</span>
+				</a>
+			</li>
+		))
+	}
+</ul>

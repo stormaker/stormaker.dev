@@ -1,127 +1,229 @@
 ---
+import type { MarkdownHeading } from 'astro';
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
+import type { Post } from '../lib/posts';
+import Base from './Base.astro';
 
-type Props = CollectionEntry<'blog'>['data'];
+type Props = CollectionEntry<'blog'>['data'] & {
+	headings?: MarkdownHeading[];
+	minutes?: number;
+	prev?: Post;
+	next?: Post;
+};
 
-const { title, description, pubDate, updatedDate, heroImage, tags, draft } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, tags, draft, headings = [], minutes, prev, next } =
+	Astro.props;
+
+// 目录只取 h2 / h3；h2 编号 01、02…，h3 缩进挂在所属 h2 下
+let n = 0;
+const toc = headings
+	.filter((h) => h.depth === 2 || h.depth === 3)
+	.map((h) => ({ ...h, n: h.depth === 2 ? String(++n).padStart(2, '0') : null }));
+const sections = toc.filter((h) => h.depth === 2);
 ---
 
-<html lang="zh-CN">
-	<head>
-		<BaseHead title={title} description={description} image={heroImage} type="article" />
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.hero-image {
-				width: 100%;
-			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-			.draft-banner {
-				margin: 0 auto 1em;
-				padding: 0.5em 1em;
-				border-radius: 8px;
-				background: #fff4e5;
-				color: #8a5300;
-				text-align: center;
-				font-size: 0.9em;
-			}
-			.tags {
-				display: flex;
-				flex-wrap: wrap;
-				justify-content: center;
-				gap: 0.5em;
-				margin-top: 1em;
-			}
-			.tags a {
-				padding: 0.2em 0.7em;
-				border-radius: 999px;
-				background: rgb(var(--gray-light));
-				color: rgb(var(--gray-dark));
-				font-size: 0.85em;
-				text-decoration: none;
-			}
-			.tags a:hover {
-				background: var(--accent);
-				color: white;
-			}
-		</style>
-	</head>
+<Base title={title} description={description} image={heroImage} type="article">
+	<div slot="top" class="progress" aria-hidden="true"></div>
 
-	<body>
-		<Header />
-		<main>
-			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
-				</div>
-				<div class="prose">
-					{draft && <p class="draft-banner">草稿 —— 只在本地 dev 可见，不会出现在线上。</p>}
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										更新于 <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						{
-							tags.length > 0 && (
-								<div class="tags">
+	<header class="post-head shell">
+		<div class="post-layout">
+			<div></div>
+			<div>
+				<nav class="crumbs rise" aria-label="面包屑">
+					<a href="/">首页</a><span aria-hidden="true">/</span><a href="/blog/">文章</a>
+					{
+						tags[0] && (
+							<>
+								<span aria-hidden="true">/</span>
+								<a href={`/tags/${encodeURIComponent(tags[0])}/`}>{tags[0]}</a>
+							</>
+						)
+					}
+				</nav>
+				<h1 class="rise d1">
+					{title}
+					{draft && <span class="draft-flag">草稿 · 仅本地可见</span>}
+				</h1>
+				<div class="meta rise d2">
+					<FormattedDate date={pubDate} />
+					{
+						updatedDate && (
+							<>
+								<span class="dot" />
+								<span>
+									更新于 <FormattedDate date={updatedDate} />
+								</span>
+							</>
+						)
+					}
+					{
+						minutes && (
+							<>
+								<span class="dot" />
+								<span>约 {minutes} 分钟读完</span>
+							</>
+						)
+					}
+					{
+						tags.length > 0 && (
+							<>
+								<span class="dot" />
+								<span class="chips">
 									{tags.map((tag) => (
-										<a href={`/tags/${encodeURIComponent(tag)}/`}>#{tag}</a>
+										<a class="chip" href={`/tags/${encodeURIComponent(tag)}/`}>
+											#{tag}
+										</a>
 									))}
-								</div>
-							)
-						}
-						<hr />
-					</div>
-					<!-- data-pagefind-body: 只有正文进搜索索引，导航和页脚不进 -->
-					<div data-pagefind-body>
-						<slot />
-					</div>
+								</span>
+							</>
+						)
+					}
 				</div>
-			</article>
-		</main>
-		<Footer />
-	</body>
-</html>
+			</div>
+		</div>
+	</header>
+
+	<div class="post-layout shell">
+		<aside class="toc" aria-label="目录" data-pagefind-ignore>
+			{
+				toc.length > 0 && (
+					<>
+						<div class="eyebrow bare">Soundings · 目录</div>
+						<ol>
+							{toc.map((h) =>
+								h.depth === 2 ? (
+									<li>
+										<a href={`#${h.slug}`}>
+											<span class="n">{h.n}</span>
+											<span>{h.text}</span>
+										</a>
+									</li>
+								) : (
+									<li class="sub">
+										<a href={`#${h.slug}`}>
+											<span>{h.text}</span>
+										</a>
+									</li>
+								),
+							)}
+						</ol>
+						<a class="top-link" href="#">↑ 回到水面</a>
+					</>
+				)
+			}
+		</aside>
+
+		<article>
+			{
+				sections.length > 0 && (
+					<details class="toc-mobile" data-pagefind-ignore>
+						<summary>目录 · {sections.length} 节</summary>
+						<ol>
+							{sections.map((h) => (
+								<li>
+									<a href={`#${h.slug}`}>{h.text}</a>
+								</li>
+							))}
+						</ol>
+					</details>
+				)
+			}
+
+			{
+				heroImage && (
+					<div class="hero-image">
+						<Image width={1020} height={510} src={heroImage} alt="" />
+					</div>
+				)
+			}
+
+			<div class="lead rise d3" data-pagefind-ignore>
+				<span class="label">TL;DR · 摘要</span>{description}
+			</div>
+
+			<!-- data-pagefind-body：只有正文进搜索索引 -->
+			<div class="prose" data-pagefind-body>
+				<slot />
+			</div>
+
+			{
+				(prev || next) && (
+					<div class="post-foot" data-pagefind-ignore>
+						<div class="eyebrow">Next port · 继续航行</div>
+						<nav class="pager" aria-label="相邻文章">
+							{prev ? (
+								<a href={`/blog/${prev.id}/`}>
+									<small>← 上一篇</small>
+									<b>{prev.data.title}</b>
+								</a>
+							) : (
+								<span />
+							)}
+							{next && (
+								<a class="next" href={`/blog/${next.id}/`}>
+									<small>下一篇 →</small>
+									<b>{next.data.title}</b>
+								</a>
+							)}
+						</nav>
+					</div>
+				)
+			}
+		</article>
+	</div>
+</Base>
+
+<script>
+	// 阅读进度条
+	const bar = document.querySelector<HTMLElement>('.progress');
+	const updateProgress = () => {
+		if (!bar) return;
+		const h = document.documentElement.scrollHeight - innerHeight;
+		bar.style.transform = `scaleX(${h > 0 ? Math.min(scrollY / h, 1) : 0})`;
+	};
+
+	// 目录 scroll-spy：当前章节 = 最后一个越过视口上方 1/3 线的标题。
+	// 读到 h3 时，所属的 h2 也点亮（within），读者能看出自己在哪一大节。
+	const links = [...document.querySelectorAll<HTMLAnchorElement>('.toc a[href^="#"]')].filter(
+		(a) => a.getAttribute('href')!.length > 1,
+	);
+	const heads = links
+		.map((a) => document.getElementById(decodeURIComponent(a.getAttribute('href')!.slice(1))))
+		.filter((h): h is HTMLElement => h !== null);
+
+	const updateToc = () => {
+		if (!heads.length) return;
+		const line = innerHeight / 3;
+		let cur = heads[0];
+		for (const h of heads) if (h.getBoundingClientRect().top < line) cur = h;
+		let parent: HTMLElement | null = null;
+		for (const h of heads) {
+			if (h.tagName === 'H2') parent = h;
+			if (h === cur) break;
+		}
+		for (const a of links) {
+			const id = decodeURIComponent(a.getAttribute('href')!.slice(1));
+			a.classList.toggle('active', id === cur.id);
+			a.classList.toggle('within', cur.tagName === 'H3' && parent?.id === id);
+		}
+	};
+
+	let ticking = false;
+	addEventListener(
+		'scroll',
+		() => {
+			if (ticking) return;
+			ticking = true;
+			requestAnimationFrame(() => {
+				updateProgress();
+				updateToc();
+				ticking = false;
+			});
+		},
+		{ passive: true },
+	);
+	updateProgress();
+	updateToc();
+</script>

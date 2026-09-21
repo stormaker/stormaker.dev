@@ -31,3 +31,6 @@ export const SOCIAL = {
  * 粘进来即生效；留空则不注入任何统计脚本。
  */
 export const CF_ANALYTICS_TOKEN = '';
+
+/** 首页潮汐卡上的「最近在写」。TODO: 换成你正在写的方向 */
+export const NOW_WRITING = 'Serverless 与边缘计算';
