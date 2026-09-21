@@ -14,6 +14,12 @@
 		// 找不到路径时返回构建出来的 404.html，而不是 Cloudflare 的默认页
 		"not_found_handling": "404-page"
 	},
+	// 自定义域。custom_domain: true 会让 Cloudflare 自动建 DNS 记录并签证书，
+	// 不用去 Dashboard 手点。域名已托管在同一账号下才有效。
+	"routes": [
+		{ "pattern": "stormaker.dev", "custom_domain": true },
+		{ "pattern": "www.stormaker.dev", "custom_domain": true }
+	],
 	"observability": {
 		"enabled": true
 	}
