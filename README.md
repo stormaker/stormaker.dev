@@ -2,35 +2,11 @@
 
 个人技术博客。Astro 静态输出，托管在 Cloudflare Workers（静态资源模式），域名 `stormaker.dev`。
 
-## 日常写作
+## 写文章
 
-```bash
-npm run dev        # http://localhost:4321，改文件即热更新
-```
+**写作、修改、发布的完整流程见 [WRITING.md](./WRITING.md)。**
 
-新文章放 `src/content/blog/`，文件名即 URL（`hello.md` → `/blog/hello/`）：
-
-```yaml
----
-title: '标题'
-description: '一句话摘要，进 <meta description>、RSS 和搜索结果'
-pubDate: 2026-09-21
-updatedDate: 2026-09-30   # 可选
-tags: ['Cloudflare', 'Astro']
-heroImage: '../../assets/xxx.jpg'   # 可选，相对路径，构建时会自动优化
-draft: true               # 写一半就设 true
----
-```
-
-`draft: true` 的文章本地可见、线上完全不存在：不渲染页面、不进 RSS / sitemap / 搜索索引。所以草稿可以放心提交进仓库。
-
-发布：把 `draft` 改成 `false`（或删掉这行），然后
-
-```bash
-git add . && git commit -m "post: 标题" && git push
-```
-
-Cloudflare 收到 push 自动构建上线，约 40 秒。
+最短路径：在 `src/content/blog/` 里写一个 `.md` 文件，push 到 `astro-blog` 分支，约 1 分钟后上线。
 
 > **当前分支是 `astro-blog`，不是 `main`。** 这个仓库的 `main` 上还是旧的 Next.js 站点，Cloudflare 的生产分支已经指向 `astro-blog`。
 > 等确定不要旧站了，再把这个分支合进 `main`，并把 Dashboard 里的生产分支改回 `main`，**两步要一起做**。
@@ -61,9 +37,10 @@ Node 版本由 `.nvmrc` 指定（24）。
 |---|---|
 | 站点标题 / 简介 / 社交链接 | `src/consts.ts` |
 | 导航栏条目 | `src/consts.ts` 的 `NAV_LINKS` |
-| 首页自我介绍 | `src/pages/index.astro` |
+| 首页简介 / 「最近在写」 | `src/consts.ts` 的 `SITE_DESCRIPTION` / `NOW_WRITING` |
+| 首页大标题 | `src/pages/index.astro` 的 `<h1>` |
 | 关于页 | `src/pages/about.astro` |
-| 全站配色、字号 | `src/styles/global.css` |
+| 全站配色（冰川晨海 token）、字号 | `src/styles/global.css` 顶部 |
 | 文章页排版 | `src/layouts/BlogPost.astro` |
 | 响应头 / 缓存策略 | `public/_headers` |
 
@@ -74,11 +51,7 @@ Dashboard → Analytics & Logs → Web Analytics → 添加 `stormaker.dev`，�
 
 ## 评论
 
-暂无。本仓库是私有的，而 giscus 要求仓库公开（读者需要能访问它的 GitHub Discussions）。三个选择：
-
-1. 把仓库改公开，再接 giscus——最省事，零后端。
-2. 保持私有，另建一个空的公开仓库专门存放 Discussions，giscus 指向它。
-3. 保持私有，用 Waline / Cusdis 之类自带后端的方案，配 Cloudflare D1 存数据。
+暂不加（2026-09-21 决定）。以后要加时，仓库是公开的，可以直接接 [giscus](https://giscus.app)（基于 GitHub Discussions，零后端）；若读者多数没有 GitHub 账号，再考虑 Waline 之类自带后端的方案，数据存 Cloudflare D1。
 
 ## 以后要加 Serverless API
 
